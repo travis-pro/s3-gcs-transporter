@@ -9,6 +9,7 @@ require 'logger'
 def logger
   @logger ||= Logger.new $stderr
   @logger.level = Logger::WARN
+  @logger
 end
 
 def options
