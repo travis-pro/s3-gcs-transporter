@@ -108,7 +108,6 @@ def main
       logger.info "Skipping #{obj_key} because it does not match prefix #{options[:s3_prefix]}"
       next
     end
-    if
 
     pn = Pathname.new(obj_key)
     gcs_obj_key = obj_key.sub(options[:s3_prefix], options[:gcs_prefix])
