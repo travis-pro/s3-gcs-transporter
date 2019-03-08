@@ -122,9 +122,11 @@ def main
 
     local_file = File.basename(pn)
 
-    unless obj_summary.download_file(local_file)
-      logger.warn "Failed to download #{obj_key}"
-      next
+    if !File.exist?(local_file)
+      unless obj_summary.download_file(local_file)
+        logger.warn "Failed to download #{obj_key}"
+        next
+      end
     end
     logger.info "Downloaded #{obj_key}"
 
