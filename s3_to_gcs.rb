@@ -11,10 +11,12 @@ def logger
 end
 
 def options
-  @options ||= {
-    s3_region: 'us-east-1',
-  }
+  @options
 end
+
+@options = {
+  s3_region: 'us-east-1',
+}
 
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
@@ -106,8 +108,15 @@ def main
       logger.info "Skipping #{obj_key} because it does not match prefix #{options[:s3_prefix]}"
       next
     end
+    if
 
     pn = Pathname.new(obj_key)
+    gcs_obj_key = obj_key.sub(options[:s3_prefix], options[:gcs_prefix])
+    if gcs_bucket.find_file gcs_obj_key
+      logger.info "Skipping #{obj_key} because #{gcs_obj_key} already exists"
+      next
+    end
+
     logger.info "Processing #{obj_key}"
     logger.info "Downloading #{obj_key}"
 
@@ -117,11 +126,12 @@ def main
       logger.warn "Failed to download #{obj_key}"
       next
     end
+    logger.info "Downloaded #{obj_key}"
 
     # Upload to GCS
-    gcs_obj_key = obj_key.sub(options[:s3_prefix], options[:gcs_prefix])
     logger.debug "local_file: #{local_file}"
     logger.debug "gcs_obj_key: #{gcs_obj_key}"
+    logger.inof "Uploading #{gcs_obj_key}"
     if gcs_bucket.create_file(local_file, gcs_obj_key, acl: 'publicRead')
       logger.info "Uploaded #{gcs_obj_key}"
       FileUtils.rm_f(local_file)
