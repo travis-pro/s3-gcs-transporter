@@ -62,12 +62,13 @@ parser = OptionParser.new do |opts|
   end
 
   opts.on("--log-level=MANDATORY", "Log level") do |level|
-    logger.level = Logger.const_get(level.upcase)
+    options[:log_level] = level
   end
 end
 
 parser.parse!
 
+logger.level = options[:log_level] if options[:log_level]
 logger.level = Logger::DEBUG if options[:verbose]
 Google::Apis.logger = logger
 
@@ -130,7 +131,7 @@ def main
     # Upload to GCS
     logger.debug "local_file: #{local_file}"
     logger.debug "gcs_obj_key: #{gcs_obj_key}"
-    logger.inof "Uploading #{gcs_obj_key}"
+    logger.info "Uploading #{gcs_obj_key}"
     if gcs_bucket.create_file(local_file, gcs_obj_key, acl: 'publicRead')
       logger.info "Uploaded #{gcs_obj_key}"
       FileUtils.rm_f(local_file)
