@@ -7,9 +7,7 @@ require 'fileutils'
 require 'logger'
 
 def logger
-  @logger ||= Logger.new $stderr
-  @logger.level = Logger::WARN
-  @logger
+  @logger ||= Logger.new $stderr, level: Logger::WARN
 end
 
 def options
@@ -68,8 +66,9 @@ end
 
 parser.parse!
 
-Google::Apis.logger = logger
 logger.level = Logger::DEBUG if options[:verbose]
+Google::Apis.logger = logger
+
 logger.debug options.inspect
 
 def s3
