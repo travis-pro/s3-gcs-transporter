@@ -6,6 +6,8 @@ require 'pathname'
 require 'fileutils'
 require 'logger'
 
+ALWAYS_UPDATE = /(head|dev|snapshot|nightly)/
+
 def logger
   @logger ||= Logger.new $stderr, level: Logger::WARN
 end
@@ -112,7 +114,7 @@ def main
 
     pn = Pathname.new(obj_key)
     gcs_obj_key = obj_key.sub(options[:s3_prefix], options[:gcs_prefix])
-    if gcs_bucket.find_file gcs_obj_key
+    if gcs_bucket.find_file(gcs_obj_key) && gcs_obj_key !~ ALWAYS_UPDATE
       logger.info "Skipping #{obj_key} because #{gcs_obj_key} already exists"
       next
     end
@@ -134,7 +136,7 @@ def main
     logger.debug "local_file: #{local_file}"
     logger.debug "gcs_obj_key: #{gcs_obj_key}"
     logger.info "Uploading #{gcs_obj_key}"
-    if gcs_bucket.create_file(local_file, gcs_obj_key, acl: 'publicRead')
+    if gcs_bucket.create_file(local_file, gcs_obj_key)
       logger.info "Uploaded #{gcs_obj_key}"
       FileUtils.rm_f(local_file)
     end
