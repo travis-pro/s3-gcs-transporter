@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'aws-sdk'
 require 'google/cloud/storage'
 require 'smarter_csv'

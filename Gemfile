@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'aws-sdk-s3'
+gem 'aws-sdk'
 gem 'google-cloud-storage'
 gem 'smarter_csv'

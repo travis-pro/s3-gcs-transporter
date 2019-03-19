@@ -1,6 +1,6 @@
 .PHONY: all
 
-COMMAND        = bundle exec ruby
+COMMAND        = bundle exec ./s3_to_gcs.rb
 S3_REGION      = us-east-1
 S3_CSV         = creds.csv
 GCS_REGION     = us-central-1a
@@ -16,18 +16,18 @@ ARGS           = --s3-region=$(S3_REGION) \
   --log-level=info
 
 ruby:
-	@$(COMMAND) s3_to_gcs.rb $(ARGS) --s3-bucket=travis-rubies --gcs-prefix=ruby/binaries/
+	@$(COMMAND) $(ARGS) --s3-bucket=travis-rubies --gcs-prefix=ruby/binaries/
 
 python:
-	@$(COMMAND) s3_to_gcs.rb $(ARGS) --s3-bucket=travis-python-archives --gcs-prefix=python/binaries/
+	@$(COMMAND) $(ARGS) --s3-bucket=travis-python-archives --gcs-prefix=python/binaries/
 
 erlang:
-	@$(COMMAND) s3_to_gcs.rb $(ARGS) --s3-bucket=travis-otp-releases --gcs-prefix=erlang/binaries/
+	@$(COMMAND) $(ARGS) --s3-bucket=travis-otp-releases --gcs-prefix=erlang/binaries/
 
 php:
-	@$(COMMAND) s3_to_gcs.rb $(ARGS) --s3-bucket=travis-php-archives --gcs-prefix=php/binaries/
+	@$(COMMAND) $(ARGS) --s3-bucket=travis-php-archives --gcs-prefix=php/binaries/
 
 perl:
-	@$(COMMAND) s3_to_gcs.rb $(ARGS) --s3-bucket=travis-perl-archives --gcs-prefix=perl/binaries/
+	@$(COMMAND) $(ARGS) --s3-bucket=travis-perl-archives --gcs-prefix=perl/binaries/
 
 all: ruby python erlang php perl
