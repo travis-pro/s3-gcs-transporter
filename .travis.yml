@@ -7,7 +7,7 @@ before_script:
   - tar xf creds.tar
 
 script:
-  - make
+  - make all
 
 after_script:
   - rm -f creds.*
