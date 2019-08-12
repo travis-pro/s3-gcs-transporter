@@ -8,7 +8,7 @@ require 'pathname'
 require 'fileutils'
 require 'logger'
 
-ALWAYS_UPDATE = /(head|dev|snapshot|nightly)|^php-\d+\.\d+\.tar/
+ALWAYS_UPDATE = /(head|dev|snapshot|nightly)|\bphp-\d+\.\d+\.tar/
 
 def logger
   @logger ||= Logger.new $stderr, level: Logger::WARN
