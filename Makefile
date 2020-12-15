@@ -1,6 +1,6 @@
 .PHONY: all
 
-COMMAND = gsutil -m rsync -r s3://$(1)/ gs://travis-ci-language-archives/$(2)/binaries/
+COMMAND = gsutil -q -m rsync -r s3://$(1)/ gs://travis-ci-language-archives/$(2)/binaries/
 
 ruby:
 	$(call COMMAND,travis-rubies,ruby)

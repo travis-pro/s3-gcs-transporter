@@ -26,7 +26,7 @@ before_script:
   - gcloud config set project ${GCS_PROJECT_ID}
   # aws
   - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-  - unzip awscliv2.zip
+  - unzip -q awscliv2.zip
   - sudo ./aws/install
   - ./import_s3_creds < creds.csv >> ~/.boto
 
