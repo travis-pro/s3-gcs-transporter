@@ -8,7 +8,7 @@ env:
 addons:
   apt:
     sources:
-      - sourceline: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+      - sourceline: "deb https://packages.cloud.google.com/apt cloud-sdk main"
         key_url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
     packages:
       - apt-transport-https
