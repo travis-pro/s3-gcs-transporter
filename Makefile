@@ -1,33 +1,20 @@
 .PHONY: all
 
-COMMAND        = bundle exec ./s3_to_gcs.rb
-S3_REGION      = us-east-1
-S3_CSV         = creds.csv
-GCS_REGION     = us-central-1a
-GCS_JSON       = creds.json
-GCS_BUCKET     = travis-ci-language-archives
-ARGS           = --s3-region=$(S3_REGION) \
-  --s3-creds-csv=$(S3_CSV) \
-  --s3-prefix=binaries/ \
-  --gcs-region=$(GCS_REGION) \
-  --gcs-creds-json=$(GCS_JSON) \
-  --gcs-project-id=$(GCS_PROJECT_ID) \
-  --gcs-bucket=$(GCS_BUCKET) \
-  --log-level=info
+COMMAND = gsutil -m rsync -r s3://$(1)/ gs://travis-ci-language-archives/$(2)/binaries/
 
 ruby:
-	@$(COMMAND) $(ARGS) --s3-bucket=travis-rubies --gcs-prefix=ruby/binaries/
+	$(call COMMAND,travis-rubies,ruby)
 
 python:
-	@$(COMMAND) $(ARGS) --s3-bucket=travis-python-archives --gcs-prefix=python/binaries/
+	$(call COMMAND,travis-python-archives,python)
 
 erlang:
-	@$(COMMAND) $(ARGS) --s3-bucket=travis-otp-releases --gcs-prefix=erlang/binaries/
+	$(call COMMAND,travis-otp-releases,erlang)
 
 php:
-	@$(COMMAND) $(ARGS) --s3-bucket=travis-php-archives --gcs-prefix=php/binaries/
+	$(call COMMAND,travis-php-archives,php)
 
 perl:
-	@$(COMMAND) $(ARGS) --s3-bucket=travis-perl-archives --gcs-prefix=perl/binaries/
+	$(call COMMAND,travis-perl-archives,perl)
 
 all: ruby python erlang php perl

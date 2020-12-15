@@ -1,0 +1,11 @@
+#! /usr/bin/awk -f
+
+BEGIN {
+    FS=","
+    print "[Credentials]"
+}
+# only process line 2 of CSV
+FNR==2 {
+    print "aws_access_key_id=" $1
+    print "aws_secret_access_key=" $2
+}
