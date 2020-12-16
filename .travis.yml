@@ -29,9 +29,17 @@ before_script:
   - unzip -q awscliv2.zip
   - sudo ./aws/install
   - ./import_s3_creds < creds.csv >> ~/.boto
+  - rm -f creds.csv creds.tar
+  # utility
+  - |
+    function dots () {
+      sleep 60
+      print .
+    }
+  - dots &
 
 script:
   - make all
 
 after_script:
-  - rm -f creds.*
+  - kill %1
