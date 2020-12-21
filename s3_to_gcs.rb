@@ -116,9 +116,22 @@ def main
 
     pn = Pathname.new(obj_key)
     gcs_obj_key = obj_key.sub(options[:s3_prefix], options[:gcs_prefix])
-    if gcs_bucket.find_file(gcs_obj_key) && gcs_obj_key !~ ALWAYS_UPDATE
-      logger.info "Skipping #{obj_key} because #{gcs_obj_key} already exists"
-      next
+
+    if !obj_key.end_with?(".sha256sum.txt")
+      begin
+        s3_obj_checksum = s3.client.get_object(
+          bucket: s3_bucket.name,
+          key: obj_key + ".sha256sum.txt"
+        ).body.string
+        gcs_obj_checksum = (gcs_obj_checksum_obj = gcs_bucket.find_file(gcs_obj_key + ".sha256sum.txt")) && gcs_obj_checksum_obj.download.string
+
+        if s3_obj_checksum == gcs_obj_checksum
+          logger.info "Skipping #{obj_key} because checksums match"
+          next
+        end
+      rescue Aws::S3::Errors::NoSuchKey => nosuchkey
+
+      end
     end
 
     logger.info "Processing #{obj_key}"
