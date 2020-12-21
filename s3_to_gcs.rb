@@ -117,6 +117,13 @@ def main
     pn = Pathname.new(obj_key)
     gcs_obj_key = obj_key.sub(options[:s3_prefix], options[:gcs_prefix])
 
+    if obj_key.end_with?(".sha256sum.txt.sha256sum.txt")
+      logger.info "Removing #{obj_key}"
+      obj_summary.delete
+      gcs_bucket.file(gcs_obj_key).delete
+      next
+    end
+
     if !obj_key.end_with?(".sha256sum.txt")
       begin
         s3_obj_checksum = s3.client.get_object(
