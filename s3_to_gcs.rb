@@ -151,6 +151,19 @@ def main
         logger.warn "Failed to download #{obj_key}"
         next
       end
+      # generate and upload sha256sum file
+      if !local_file.end_with?(".sha256sum.txt")
+        `sha256sum #{local_file} > #{local_file}.sha256sum.txt`
+        logger.debug "Generated sha256 checksum file: #{File.read(local_file + ".sha256sum.txt")}"
+        logger.info "Uploading #{local_file + ".sha256sum.txt"} to S3"
+        s3_bucket.put_object(
+          acl: "public-read",
+          body: File.read(local_file + ".sha256sum.txt"),
+          key: obj_key + ".sha256sum.txt"
+        )
+        logger.info "Uploading #{local_file + ".sha256sum.txt"} to GCS"
+        gcs_bucket.create_file(local_file + ".sha256sum.txt", gcs_obj_key + ".sha256sum.txt")
+      end
     end
     logger.info "Downloaded #{obj_key}"
 
