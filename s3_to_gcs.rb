@@ -132,14 +132,14 @@ def main
         ).body.string
         gcs_obj_checksum = (gcs_obj_checksum_obj = gcs_bucket.find_file(gcs_obj_key + ".sha256sum.txt")) && gcs_obj_checksum_obj.download.string
 
-        if s3_obj_checksum == gcs_obj_checksum
+        if checksums_match_p = (s3_obj_checksum == gcs_obj_checksum)
           logger.info "Skipping #{obj_key} because checksums match"
-          next
         end
       rescue Aws::S3::Errors::NoSuchKey => nosuchkey
-
       end
     end
+
+    next if checksums_match_p
 
     logger.info "Processing #{obj_key}"
     logger.info "Downloading #{obj_key}"
