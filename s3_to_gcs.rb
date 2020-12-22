@@ -124,19 +124,27 @@ def main
       next
     end
 
-    if !obj_key.end_with?(".sha256sum.txt")
-      begin
-        s3_obj_checksum = s3.client.get_object(
-          bucket: s3_bucket.name,
-          key: obj_key + ".sha256sum.txt"
-        ).body.string
-        gcs_obj_checksum = (gcs_obj_checksum_obj = gcs_bucket.find_file(gcs_obj_key + ".sha256sum.txt")) && gcs_obj_checksum_obj.download.string
+    checksums_match_p = false
 
-        if checksums_match_p = (s3_obj_checksum == gcs_obj_checksum)
-          logger.info "Skipping #{obj_key} because checksums match"
-        end
-      rescue Aws::S3::Errors::NoSuchKey => nosuchkey
+    begin
+      checksum_obj_key = obj_key
+      gcs_checksum_obj_key = gcs_obj_key
+
+      if !obj_key.end_with?(".sha256sum.txt")
+        checksum_obj_key = obj_key + ".sha256sum.txt"
+        gcs_checksum_obj_key = gcs_obj_key + ".sha256sum.txt"
       end
+
+      s3_obj_checksum = s3.client.get_object(
+        bucket: s3_bucket.name,
+        key: checksum_obj_key
+      ).body.string
+      gcs_obj_checksum = (gcs_obj_checksum_obj = gcs_bucket.find_file(gcs_checksum_obj_key)) && gcs_obj_checksum_obj.download.string
+
+      if checksums_match_p = (s3_obj_checksum == gcs_obj_checksum)
+        logger.info "Skipping #{obj_key} because checksums match"
+      end
+    rescue Aws::S3::Errors::NoSuchKey => nosuchkey
     end
 
     next if checksums_match_p
