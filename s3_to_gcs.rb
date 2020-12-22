@@ -161,7 +161,10 @@ def main
       if checksums_match_p = (s3_obj_checksum == gcs_obj_checksum)
         logger.info "Skipping #{obj_key} because checksums match"
       end
-    rescue Aws::S3::Errors::NoSuchKey => nosuchkey
+    rescue Aws::S3::Errors::ServiceError => s3err
+      logger.warn(obj_key + " " + s3err.message)
+    rescue Google::Cloud::Error => gcerr
+      logger.warn(obj_key + " " + gcerr.message)
     end
 
     next if checksums_match_p
