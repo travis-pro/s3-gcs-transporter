@@ -7,11 +7,28 @@ require 'optparse'
 require 'pathname'
 require 'fileutils'
 require 'logger'
+require 'rainbow'
 
 ALWAYS_UPDATE = /(head|dev|snapshot|nightly)|\bphp-\d+\.\d+\.tar/
 
 def logger
-  @logger ||= Logger.new $stderr, level: Logger::WARN
+  @logger ||= Logger.new(
+    $stderr,
+    level: Logger::WARN,
+    formatter: proc do |severity, time, progname, msg|
+      case severity
+      when "UNKOWN", "FATAL", "ERROR"
+        c = :red
+      when /WARN/
+        c = :yellow
+      when /INFO/
+        c = :blue
+      when /DEBUG/
+        c = :default
+      end
+      Logger::Formatter::Format % [severity[0..0], time.strftime(@datetime_format || "%Y-%m-%dT%H:%M:%S.%6N "), $$, Rainbow(severity).color(c), progname, msg]
+    end
+  )
 end
 
 def options
@@ -161,6 +178,11 @@ def main
       end
       # generate and upload sha256sum file
       if !local_file.end_with?(".sha256sum.txt")
+        begin
+          s3.client.get_object(bucket: s3_bucket.name, key: obj_key + ".sha256sum.txt")
+        rescue ExceptionName
+
+        end
         `sha256sum #{local_file} > #{local_file}.sha256sum.txt`
         logger.debug "Generated sha256 checksum file: #{File.read(local_file + ".sha256sum.txt")}"
         logger.info "Uploading #{local_file + ".sha256sum.txt"} to S3"
