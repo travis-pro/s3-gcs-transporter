@@ -183,8 +183,8 @@ def main
       if !local_file.end_with?(".sha256sum.txt")
         begin
           s3.client.get_object(bucket: s3_bucket.name, key: obj_key + ".sha256sum.txt")
-        rescue ExceptionName
-
+        rescue Aws::S3::Errors::NoSuchKey => no_such_key
+          logger.warn(obj_key + ".sha256sum.txt does not exist")
         end
         `sha256sum #{local_file} > #{local_file}.sha256sum.txt`
         logger.debug "Generated sha256 checksum file: #{File.read(local_file + ".sha256sum.txt")}"
